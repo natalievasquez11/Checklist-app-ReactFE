@@ -4,7 +4,8 @@ import './listitems.css';
 class Listitems extends Component {
     state = {
         isBeingUpdated: false,
-        updatedTask: ""
+        updatedTask: "",
+        isCompleted: true
     }
 
     handleUpdateTask(task) {
@@ -47,20 +48,52 @@ class Listitems extends Component {
         this.setState({ isBeingUpdated: true });
     }
 
+    handleCheckbox = (event) => {
+        this.setState({ isCompleted: !this.state.isCompleted });
+        this.props.task.taskCompleted = this.state.isCompleted;
+
+        fetch("http://localhost:8080/updateTask/" + this.props.task.id, {
+            method: "PUT",
+            headers: {
+                'Content-Type': 'application/json',
+              },
+            body: JSON.stringify(this.props.task)
+        })
+        .then(res => {
+            console.log(res);
+            this.props.getTasks();
+        })
+        .catch(err => console.log(err));
+    }
+
     render() {
         return (
             <li className="list-group-item" >
                 {
                     (!this.state.isBeingUpdated) ? (
                         <div className="updateDiv">
-                            <span>
-                                <input type="checkbox"></input> 
+                            <span style={!this.state.isCompleted ? {'textDecoration': 'line-through'} : {'textDecoration': 'none'}}>
+                                <input 
+                                type="checkbox" 
+                                onChange={this.handleCheckbox} 
+                                value={this.props.task.id} ></input> 
                                 {this.props.task.taskName}
                             </span>
                         
                             <span className="listItemBtns">
-                                <button type="button" className="btn btn-dark" onClick={() => this.handleEditClick()}>Edit</button>
-                                <button type="button" className="btn btn-danger" onClick={() => this.handleDelete(this.props.task.id)}>Delete</button>
+                                <button 
+                                    type="button" 
+                                    className="btn btn-dark" 
+                                    onClick={() => this.handleEditClick()}>
+                                        Edit
+                                </button>
+
+                                <button 
+                                    type="button" 
+                                    className="btn btn-danger" 
+                                    onClick={() => this.handleDelete(this.props.task.id)}>
+                                        Delete
+                                </button>
                             </span>
                         </div>
                     )

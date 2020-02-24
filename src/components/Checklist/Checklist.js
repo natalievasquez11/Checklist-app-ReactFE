@@ -37,26 +37,31 @@ class Checklist extends Component {
     }
 
     handleAddNewSave(newTask) {
-        fetch("http://localhost:8080/addTask", {
-            method: "POST",
-            headers: {
-                'Content-Type': 'application/json'
-              },
-            body: JSON.stringify({
-                taskName: newTask
+        if(newTask !== "") {
+            fetch("http://localhost:8080/addTask", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                  },
+                body: JSON.stringify({
+                    taskName: newTask
+                })
             })
-        })
-        .then(res => {
-            console.log(res);
-            this.setState(
-                { 
-                    isAddingNewTask: false,
-                    newTask: ""
-                }
-            );
-            this.getTasks();
-        })
-        .catch(err => console.log(err));
+            .then(res => {
+                console.log(res);
+                this.setState(
+                    { 
+                        isAddingNewTask: false,
+                        newTask: ""
+                    }
+                );
+                this.getTasks();
+            })
+            .catch(err => console.log(err));
+        } else {
+            this.setState({ isAddingNewTask: false });
+        }
+        
     }
 
     handleAddNewClick() {
